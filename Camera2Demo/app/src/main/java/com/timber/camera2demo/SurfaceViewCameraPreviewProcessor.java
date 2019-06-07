@@ -1,6 +1,7 @@
 package com.timber.camera2demo;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.util.Log;
 import android.view.Surface;
@@ -9,14 +10,17 @@ import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
 
+import com.android.camera2.R;
+
+
 public class SurfaceViewCameraPreviewProcessor extends CameraPreviewProcessor implements SurfaceHolder.Callback {
     private final static String TAG = "SurfaceViewCameraPreviewProcessor";
     private SurfaceView mPreviewView;
-    public SurfaceViewCameraPreviewProcessor(Activity activity) {
-        super(activity);
+    public SurfaceViewCameraPreviewProcessor(View activity, Context context) {
+        super(activity, context);
 
         Log.i(TAG, "timber.surfaceview onCreate begin.");
-        mActivity.setContentView(R.layout.camera_sv);
+        //mActivity.setContentView(R.layout.camera_sv);
     }
 
     @Override

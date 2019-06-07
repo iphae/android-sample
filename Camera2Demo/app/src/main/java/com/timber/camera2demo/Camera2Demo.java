@@ -20,7 +20,7 @@ public class Camera2Demo extends CameraActivity {
     @Override
     public void onCreateTasks(Bundle savedInstanceState) {
         //mCameraPrevier = new TextureViewCameraPreviewProcessor(this);
-        mCameraPrevier = new SurfaceViewCameraPreviewProcessor(this);
+        //mCameraPrevier = new SurfaceViewCameraPreviewProcessor(this);
 
         mCameraPrevier.initView();
         mCameraPrevier.openCamera();

@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="bottom_bar_height_min">84dp</dimen>
+    <dimen name="bottom_bar_height_max">120dp</dimen>
+    <dimen name="bottom_bar_height_optimal">96dp</dimen>
+
+    <dimen name="zoom_stroke">3dp</dimen>
+
+    <dimen name="grid_line_width">1dp</dimen>
+
     <dimen name="bottom_bar_height">190dp</dimen>
     <dimen name="shutter_button_background_height">64dp</dimen>
     <dimen name="shutter_button_layout_margin_top">64dp</dimen>

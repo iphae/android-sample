@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--Index of camera modes. -->
+    <integer name="camera_mode_photo">0</integer>
+    <integer name="camera_mode_video">1</integer>
+    <integer name="camera_mode_refocus">2</integer>
+    <integer name="camera_mode_photosphere">3</integer>
+    <integer name="camera_mode_panorama">4</integer>
+    <integer name="camera_mode_gcam">5</integer>
+    <integer name="camera_mode_capture_intent">6</integer>
+
+    <array name="camera_mode_theme_color">
+        <item>@color/camera_mode_color</item>
+        <item>@color/video_mode_color</item>
+        <item>@color/refocus_mode_color</item>
+        <item>@color/photosphere_mode_color</item>
+        <item>@color/panorama_mode_color</item>
+        <item>@color/camera_mode_color</item>
+        <item>@color/camera_mode_color</item>
+    </array>
+
+    <string-array name="camera_mode_content_description">
+        <item>@string/mode_camera_desc</item>
+        <item>@string/mode_video_desc</item>
+        <item>@string/mode_refocus_desc</item>
+        <item>@string/mode_photosphere_desc</item>
+        <item>@string/mode_panorama_desc</item>
+        <item>""</item>
+        <item>""</item>
+    </string-array>
+
+    <array name="camera_mode_cover_icon">
+        <!--<item>@drawable/ic_camera_blanket</item>-->
+        <!--<item>@drawable/ic_video_blanket</item>-->
+        <!--<item>@drawable/ic_refocus_blanket</item>-->
+        <!--<item>@drawable/ic_photosphere_blanket</item>-->
+        <!--<item>@drawable/ic_pano_blanket</item>-->
+        <!--<item>@drawable/ic_camera_blanket</item>-->
+        <!--<item>@drawable/ic_camera_blanket</item>-->
+    </array>
+
+    <array name="camera_mode_icon">
+        <!--<item>@drawable/ic_camera_normal</item>-->
+        <!--<item>@drawable/ic_video_normal</item>-->
+        <!--<item>@drawable/ic_refocus_normal</item>-->
+        <!--<item>@drawable/ic_photosphere_normal</item>-->
+        <!--<item>@drawable/ic_panorama_normal</item>-->
+        <!--<item>@drawable/ic_camera_normal</item>-->
+        <!--<item>@drawable/ic_camera_normal</item>-->
+    </array>
+
+    <array name="camera_mode_shutter_icon">
+        <!--<item>@drawable/ic_capture_camera</item>-->
+        <!--<item>@drawable/ic_capture_video</item>-->
+        <!--<item>@drawable/ic_capture_refocus</item>-->
+        <!--<item>@null</item>-->
+        <!--<item>@drawable/ic_capture_panorama</item>-->
+        <!--<item>@drawable/ic_capture_camera</item>-->
+        <!--<item>@drawable/ic_capture_camera</item>-->
+    </array>
+
+    <string-array name="camera_mode_text">
+        <item>@string/mode_camera</item>
+        <item>@string/mode_video</item>
+        <item>@string/mode_refocus</item>
+        <item>@string/mode_photosphere</item>
+        <item>@string/mode_panorama</item>
+        <item>""</item>
+        <item>""</item>
+    </string-array>
+
+    <!-- Camera modes that each supported mode is nested in in nav drawer. -->
+    <integer-array name="camera_mode_nested_in_nav_drawer">
+        <item>@integer/camera_mode_photo</item>
+        <item>@integer/camera_mode_video</item>
+        <item>@integer/camera_mode_refocus</item>
+        <item>@integer/camera_mode_photosphere</item>
+        <item>@integer/camera_mode_panorama</item>
+        <item>@integer/camera_mode_photo</item>
+    </integer-array>
+</resources>

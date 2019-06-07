@@ -18,6 +18,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.Size;
 import android.view.Surface;
+import android.view.View;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -40,11 +41,11 @@ public abstract class CameraPreviewProcessor {
     protected Surface mPreviewSurface;
 
     protected Context mContext;
-    protected Activity mActivity;
+    protected View mActivity;
 
-    public CameraPreviewProcessor(Activity activity) {
+    public CameraPreviewProcessor(View activity, Context context) {
         mActivity = activity;
-        mContext = mActivity.getApplicationContext();
+        mContext = context;
 
         mPreviewSize = new Size(864, 480);
         initLooper();

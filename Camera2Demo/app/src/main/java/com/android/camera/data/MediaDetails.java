@@ -22,7 +22,7 @@ import android.util.SparseIntArray;
 import com.android.camera.debug.Log;
 import com.android.camera.exif.ExifInterface;
 import com.android.camera.exif.ExifTag;
-import com.timber.camera2demo.R;
+import com.android.camera2.R;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

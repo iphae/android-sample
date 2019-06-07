@@ -9,6 +9,9 @@ import android.util.Log;
 import android.util.Size;
 import android.view.Surface;
 import android.view.TextureView;
+import android.view.View;
+
+import com.android.camera2.R;
 
 
 public class TextureViewCameraPreviewProcessor extends CameraPreviewProcessor implements TextureView.SurfaceTextureListener {
@@ -16,11 +19,11 @@ public class TextureViewCameraPreviewProcessor extends CameraPreviewProcessor im
 
     private TextureView mPreviewView;
 
-    public TextureViewCameraPreviewProcessor(Activity activity) {
-        super(activity);
+    public TextureViewCameraPreviewProcessor(View activity, Context context) {
+        super(activity, context);
 
         Log.i(TAG, "timber.textureview preview onCreate begin.");
-        mActivity.setContentView(R.layout.camera);
+        //mActivity.setContentView(R.layout.camera);
     }
 
     //可以通过TextureView或者SurfaceView
