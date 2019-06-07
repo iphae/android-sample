@@ -1,0 +1,18 @@
+//只有300支持version关键字，
+//300版本是没有gl_FragColor这样的全局预设变量的，因此300需要定义输出颜色变量
+//out vec4 fragColor;
+
+//200版本不支持in/out关键字
+#version 300 es
+
+precision mediump float;
+//varying vec4 vColor;//200版本的顶点数据是通过varying 加相同变量名来进行对应的
+//in vec4 vColor;//与顶点shader的vColor对应，对应顶点着色器的out vColor
+out vec4 fragColor;
+
+in vec4 aColor;//200版本的片段着色器是不能声明attribute的
+
+void main() {
+    //gl_FragColor = aColor;
+    fragColor = aColor;
+}
