@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_bar_height"
+        android:layout_alignParentBottom="true"
+        android:background="@null">
+
+        <RelativeLayout
+            android:id="@+id/photo_layout"
+            android:layout_width="@dimen/shutter_button_background_height"
+            android:layout_height="@dimen/shutter_button_background_height"
+            android:background="@drawable/ic_shutter_button_shadow"
+            android:layout_marginTop="@dimen/shutter_button_layout_margin_top"
+            android:layout_centerHorizontal="true"
+            android:gravity="center_horizontal" >
+
+            <com.android.camera.ui.ShutterButton
+                android:id="@+id/shutter_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:clickable="true"
+                android:contentDescription="@string/accessibility_shutter_button"
+                android:focusable="true"
+                android:src="@drawable/ic_shutter_button" />
+        </RelativeLayout>
+
+        <ImageView
+            android:layout_width="@dimen/shutter_button_point_height"
+            android:layout_height="@dimen/shutter_button_point_height"
+            android:layout_marginTop="94dp"
+            android:layout_toRightOf="@+id/photo_layout"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/shutter_point_icon" />
+
+        <com.android.camera.ui.ShutterButton
+            android:id="@+id/photo_video_change"
+            android:layout_width="@dimen/shutter_button_video_height"
+            android:layout_height="@dimen/shutter_button_video_height"
+            android:layout_marginTop="@dimen/shutter_button_background_layout_margin_top"
+            android:layout_toRightOf="@+id/photo_layout"
+            android:layout_marginStart="23dp"
+            android:clickable="true"
+            android:focusable="false"
+            android:src="@drawable/ic_video_switch"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>

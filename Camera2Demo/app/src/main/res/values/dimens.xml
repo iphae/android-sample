@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="bottom_bar_height">190dp</dimen>
+    <dimen name="shutter_button_background_height">64dp</dimen>
+    <dimen name="shutter_button_layout_margin_top">64dp</dimen>
+    <dimen name="shutter_button_point_height">3dp</dimen>
+    <dimen name="shutter_button_video_height">36dp</dimen>
+    <dimen name="shutter_button_background_layout_margin_top">78dp</dimen>
+</resources>

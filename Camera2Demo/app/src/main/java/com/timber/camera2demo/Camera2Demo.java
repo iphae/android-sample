@@ -6,9 +6,11 @@ import android.media.Image;
 import android.media.ImageReader;
 import android.os.Bundle;
 
+import com.android.camera.CameraActivity;
+
 import java.nio.ByteBuffer;
 
-public class Camera2Demo extends Activity {
+public class Camera2Demo extends CameraActivity {
 
 
     private ImageReader mImageReader;
@@ -16,8 +18,7 @@ public class Camera2Demo extends Activity {
     CameraPreviewProcessor mCameraPrevier;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreateTasks(Bundle savedInstanceState) {
         //mCameraPrevier = new TextureViewCameraPreviewProcessor(this);
         mCameraPrevier = new SurfaceViewCameraPreviewProcessor(this);
 
