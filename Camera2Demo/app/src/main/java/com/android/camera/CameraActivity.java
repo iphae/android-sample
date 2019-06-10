@@ -10,7 +10,12 @@ import android.graphics.SurfaceTexture;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
+import android.os.Message;
 import android.provider.MediaStore;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import com.android.camera.app.AppController;
@@ -22,17 +27,25 @@ import com.android.camera.app.CameraServicesImpl;
 import com.android.camera.app.ModuleManager;
 import com.android.camera.app.OrientationManager;
 import com.android.camera.debug.Log;
+import com.android.camera.device.ActiveCameraDeviceTracker;
 import com.android.camera.module.ModuleController;
 import com.android.camera.one.OneCameraOpener;
 import com.android.camera.one.config.OneCameraFeatureConfig;
 import com.android.camera.settings.ResolutionSetting;
 import com.android.camera.settings.SettingsManager;
+import com.android.camera.stats.UsageStatistics;
 import com.android.camera.ui.MainActivityLayout;
 import com.android.camera.ui.PreviewStatusListener;
 import com.android.camera.util.QuickActivity;
 import com.android.camera2.R;
+import com.android.ex.camera2.portability.CameraAgent;
+import com.android.ex.camera2.portability.CameraAgentFactory;
+import com.android.ex.camera2.portability.CameraExceptionHandler;
 import com.timber.camera2demo.CameraPreviewProcessor;
+import com.timber.camera2demo.SurfaceViewCameraPreviewProcessor;
 import com.timber.camera2demo.TextureViewCameraPreviewProcessor;
+
+import java.lang.ref.WeakReference;
 
 
 public class CameraActivity extends QuickActivity
@@ -40,12 +53,24 @@ public class CameraActivity extends QuickActivity
 {
     private static final Log.Tag TAG = new Log.Tag("CameraActivity");
 
+    private static final int MSG_CLEAR_SCREEN_ON_FLAG = 2;
+
+    private ActiveCameraDeviceTracker mActiveCameraDeviceTracker;
+
     /**
      * Should be used wherever a context is needed.
      */
     private Context mAppContext;
 
+    private boolean mCameraFatalError = false;
+
+    private HandlerThread mThreadHandler;
+    private Handler mMainHandler;
+    private CameraPreviewProcessor mCameraPreviewer;
+
+    private FatalErrorHandler mFatalErrorHandler;
     private CameraController mCameraController;
+    private boolean mPaused;
 
     private CameraAppUI mCameraAppUI;
 
@@ -67,10 +92,66 @@ public class CameraActivity extends QuickActivity
 
         setContentView(R.layout.activity_main);
 
+        mThreadHandler = new HandlerThread("Camera2-Open");
+        mThreadHandler.start();
+        mMainHandler = new MainHandler(this, mThreadHandler.getLooper());
+        mCameraPreviewer = new TextureViewCameraPreviewProcessor(this, getAndroidContext());
+        //mCameraPreviewer = new SurfaceViewCameraPreviewProcessor(this, getAndroidContext());
+        mCameraPreviewer.initView();
+        mCameraPreviewer.openCamera();
+
         mCameraAppUI = new CameraAppUI(this,
                 (MainActivityLayout) findViewById(R.id.activity_root_view), isCaptureIntent());
         mCameraAppUI.prepareModuleUI();
     }
+
+    /**
+     * Note: Make sure this callback is unregistered properly when the activity
+     * is destroyed since we're otherwise leaking the Activity reference.
+     */
+    private final CameraExceptionHandler.CameraExceptionCallback mCameraExceptionCallback = new
+            CameraExceptionHandler.CameraExceptionCallback()
+            {
+                @Override
+                public void onCameraError(int errorCode)
+                {
+                    // Not a fatal error. only do Log.e().
+                    Log.e(TAG, "Camera error callback. error=" + errorCode);
+                }
+
+                @Override
+                public void onCameraException(RuntimeException ex, String commandHistory, int action, int state)
+                {
+                    Log.e(TAG, "Camera Exception", ex);
+                    onFatalError();
+                }
+
+                @Override
+                public void onDispatchThreadException(RuntimeException ex)
+                {
+                    Log.e(TAG, "DispatchThread Exception", ex);
+                    onFatalError();
+                }
+
+                private void onFatalError()
+                {
+                    if (mCameraFatalError)
+                    {
+                        return;
+                    }
+                    mCameraFatalError = true;
+
+                    // If the activity receives exception during onPause, just exit the app.
+                    if (mPaused && !isFinishing())
+                    {
+                        Log.e(TAG, "Fatal error during onPause, call Activity.finish()");
+                        finish();
+                    } else
+                    {
+                        mFatalErrorHandler.handleFatalError(FatalErrorHandler.Reason.CANNOT_CONNECT_TO_CAMERA);
+                    }
+                }
+            };
 
     @Override
     public boolean isCaptureIntent() {
@@ -346,6 +427,44 @@ public class CameraActivity extends QuickActivity
 
     @Override
     public void finishActivityWithIntentCanceled() {
+
+    }
+
+    private static class MainHandler extends Handler
+    {
+        final WeakReference<CameraActivity> mActivity;
+
+        public MainHandler(CameraActivity activity, Looper looper)
+        {
+            super(looper);
+            mActivity = new WeakReference<CameraActivity>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg)
+        {
+            CameraActivity activity = mActivity.get();
+            if (activity == null)
+            {
+                return;
+            }
+            switch (msg.what)
+            {
+
+                case MSG_CLEAR_SCREEN_ON_FLAG:
+                {
+                    if (!activity.mPaused)
+                    {
+                        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
 
     }
 }

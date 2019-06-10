@@ -157,14 +157,18 @@ public abstract class CameraPreviewProcessor {
         session.setRepeatingRequest(mPreviewBuilder.build(), mPreviewStartedCallback, mHandler);
     }
 
+    public void setCameraOpened(CameraDevice camera) {
+        mCameraOpened = true;
+        mCameraDevice = camera;
+        Log.i(TAG, "timber.textureview preview openCamera onOpened.");
+        startPreview();
+    }
+
     protected CameraDevice.StateCallback mCameraDeviceStateCallback = new CameraDevice.StateCallback() {
 
         @Override
         public void onOpened(CameraDevice camera) {
-            mCameraOpened = true;
-            mCameraDevice = camera;
-            Log.i(TAG, "timber.textureview preview openCamera onOpened.");
-            startPreview();
+            setCameraOpened(camera);
         }
 
         @Override

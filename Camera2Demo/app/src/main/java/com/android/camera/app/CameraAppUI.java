@@ -523,7 +523,6 @@ public class CameraAppUI implements
 //    private final FilmstripBottomPanel mFilmstripBottomControls;
 //    private final FilmstripContentPanel mFilmstripPanel;
 
-    private CameraPreviewProcessor mCameraPrevier;
 
     private Runnable mHideCoverRunnable;
     private final View.OnLayoutChangeListener mPreviewLayoutChangeListener
@@ -811,9 +810,6 @@ public class CameraAppUI implements
         mAppRootView = appRootView;
 
         mCameraRootView = (FrameLayout) mAppRootView.findViewById(R.id.camera_app_root);
-
-        //mCameraPrevier = new TextureViewCameraPreviewProcessor((CameraActivity) mController, controller.getAndroidContext());
-        mCameraPrevier = new SurfaceViewCameraPreviewProcessor((CameraActivity) mController, controller.getAndroidContext());
 
 //        mFilmstripLayout = (FilmstripLayout) mAppRootView.findViewById(R.id.filmstrip_layout);
 //        mFilmstripBottomControls = new FilmstripBottomPanel(controller,
@@ -1432,9 +1428,6 @@ public class CameraAppUI implements
      */
     public void prepareModuleUI()
     {
-        mCameraPrevier.initView();
-        //mCameraPrevier.openCamera();
-
         mController.getSettingsManager().addListener(this);
 
         mModuleUI = (FrameLayout) mCameraRootView.findViewById(R.id.module_layout);
