@@ -9,16 +9,20 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
+import android.widget.FrameLayout;
 
+import com.android.camera.CameraActivity;
 import com.android.camera2.R;
 
 
 public class SurfaceViewCameraPreviewProcessor extends CameraPreviewProcessor implements SurfaceHolder.Callback {
     private final static String TAG = "SurfaceViewCameraPreviewProcessor";
     private SurfaceView mPreviewView;
-    public SurfaceViewCameraPreviewProcessor(View activity, Context context) {
+
+    public SurfaceViewCameraPreviewProcessor(CameraActivity activity, Context context) {
         super(activity, context);
 
+        mLayoutId = R.layout.camera_preview_layout;
         Log.i(TAG, "timber.surfaceview onCreate begin.");
         //mActivity.setContentView(R.layout.camera_sv);
     }
@@ -46,7 +50,9 @@ public class SurfaceViewCameraPreviewProcessor extends CameraPreviewProcessor im
 
     @Override
     public void initView() {
-        mPreviewView = (SurfaceView) mActivity.findViewById(R.id.surfaceview);
+        super.initView();
+
+        mPreviewView = (SurfaceView) mCurSurfaceViewLayout.findViewById(R.id.camera_preview);
         mPreviewView.getHolder().addCallback(this);
         //mPreviewView.getHolder().setFixedSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
     }

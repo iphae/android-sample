@@ -10,7 +10,9 @@ import android.util.Size;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.widget.FrameLayout;
 
+import com.android.camera.CameraActivity;
 import com.android.camera2.R;
 
 
@@ -19,21 +21,25 @@ public class TextureViewCameraPreviewProcessor extends CameraPreviewProcessor im
 
     private TextureView mPreviewView;
 
-    public TextureViewCameraPreviewProcessor(View activity, Context context) {
+    public TextureViewCameraPreviewProcessor(CameraActivity activity, Context context) {
         super(activity, context);
 
+        mLayoutId = R.layout.camera_preview_layout_tv;
         Log.i(TAG, "timber.textureview preview onCreate begin.");
         //mActivity.setContentView(R.layout.camera);
     }
 
     //可以通过TextureView或者SurfaceView
     public void initView() {
-        mPreviewView = (TextureView) mActivity.findViewById(R.id.textureview);
+        super.initView();
+
+        mPreviewView = (TextureView) mCameraActivity.findViewById(R.id.camera_preview);
         mPreviewView.setSurfaceTextureListener(this);
     }
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+        Log.i(TAG, "timber.textureview preview onSurfaceTextureAvailable. width:" + width + ", height:" + height);
         onSurfaceAvailable();
         //openCamera();
     }

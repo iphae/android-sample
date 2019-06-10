@@ -19,6 +19,10 @@ import android.util.Log;
 import android.util.Size;
 import android.view.Surface;
 import android.view.View;
+import android.widget.FrameLayout;
+
+import com.android.camera.CameraActivity;
+import com.android.camera2.R;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -41,17 +45,29 @@ public abstract class CameraPreviewProcessor {
     protected Surface mPreviewSurface;
 
     protected Context mContext;
-    protected View mActivity;
+    protected CameraActivity mCameraActivity;
 
-    public CameraPreviewProcessor(View activity, Context context) {
-        mActivity = activity;
+    protected FrameLayout mCurSurfaceViewLayout;
+    protected int mLayoutId;
+
+    public CameraPreviewProcessor(CameraActivity activity, Context context) {
+        mCameraActivity = activity;
         mContext = context;
 
-        mPreviewSize = new Size(864, 480);
+        mPreviewSize = new Size(960, 720);
         initLooper();
     }
 
-    public abstract void initView();
+    public void initView() {
+        FrameLayout surfaceViewRoot =
+                mCameraActivity.findViewById(R.id.camera_surfaceview_root);
+
+        mCurSurfaceViewLayout =
+                (FrameLayout) mCameraActivity.getLayoutInflater().inflate(
+                        mLayoutId, null);
+        surfaceViewRoot.addView(mCurSurfaceViewLayout);
+    }
+
     protected abstract void setupPreviewSurface();
     //protected abstract Surface getPreviewSurface();
 
@@ -64,7 +80,6 @@ public abstract class CameraPreviewProcessor {
 
     protected void onSurfaceAvailable() {
         setupPreviewSurface();
-        Log.i(TAG, "timber.textureview preview onSurfaceTextureAvailable.");
         startPreview();
         //openCamera();
     }

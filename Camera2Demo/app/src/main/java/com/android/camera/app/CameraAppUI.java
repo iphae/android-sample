@@ -37,11 +37,13 @@ import android.widget.ImageButton;
 //import com.android.camera.AccessibilityUtil;
 import com.android.camera.AnimationManager;
 //import com.android.camera.ButtonManager;
+import com.android.camera.CameraActivity;
 import com.android.camera.CaptureLayoutHelper;
 import com.android.camera.TextureViewHelper;
 import com.android.camera.debug.Log;
 //import com.android.camera.filmstrip.FilmstripContentPanel;
 import com.android.camera.hardware.HardwareSpec;
+import com.android.camera.manager.ShutterManager;
 import com.android.camera.module.ModuleController;
 import com.android.camera.settings.Keys;
 import com.android.camera.settings.SettingsManager;
@@ -461,6 +463,8 @@ public class CameraAppUI implements
     private final boolean mIsCaptureIntent;
     private final AnimationManager mAnimationManager;
 
+    private ShutterManager mShutterManager;
+
     // Swipe states:
     private final static int IDLE = 0;
     private final static int SWIPE_UP = 1;
@@ -808,8 +812,8 @@ public class CameraAppUI implements
 
         mCameraRootView = (FrameLayout) mAppRootView.findViewById(R.id.camera_app_root);
 
-        //mCameraPrevier = new TextureViewCameraPreviewProcessor(appRootView, controller.getAndroidContext());
-        mCameraPrevier = new SurfaceViewCameraPreviewProcessor(appRootView, controller.getAndroidContext());
+        //mCameraPrevier = new TextureViewCameraPreviewProcessor((CameraActivity) mController, controller.getAndroidContext());
+        mCameraPrevier = new SurfaceViewCameraPreviewProcessor((CameraActivity) mController, controller.getAndroidContext());
 
 //        mFilmstripLayout = (FilmstripLayout) mAppRootView.findViewById(R.id.filmstrip_layout);
 //        mFilmstripBottomControls = new FilmstripBottomPanel(controller,
@@ -1429,11 +1433,13 @@ public class CameraAppUI implements
     public void prepareModuleUI()
     {
         mCameraPrevier.initView();
-        mCameraPrevier.openCamera();
+        //mCameraPrevier.openCamera();
 
         mController.getSettingsManager().addListener(this);
 
         mModuleUI = (FrameLayout) mCameraRootView.findViewById(R.id.module_layout);
+
+        mShutterManager = new ShutterManager();
     }
 
     /**
@@ -2249,5 +2255,10 @@ public class CameraAppUI implements
     {
 //        return mFilmstripLayout.getVisibility();
         return View.GONE;
+    }
+
+    private boolean isUIReady =false;
+    public void initMainUI() {
+        mShutterManager.setVisibility(View.VISIBLE);
     }
 }
