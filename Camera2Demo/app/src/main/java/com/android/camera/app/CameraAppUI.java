@@ -1432,7 +1432,7 @@ public class CameraAppUI implements
 
         mModuleUI = (FrameLayout) mCameraRootView.findViewById(R.id.module_layout);
 
-        mShutterManager = new ShutterManager();
+        mShutterManager = new ShutterManager((CameraActivity)mController);
     }
 
     /**

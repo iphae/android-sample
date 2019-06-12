@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
+import android.hardware.camera2.CameraDevice;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.view.ViewManager;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
@@ -36,6 +38,7 @@ import com.android.camera.settings.SettingsManager;
 import com.android.camera.stats.UsageStatistics;
 import com.android.camera.ui.MainActivityLayout;
 import com.android.camera.ui.PreviewStatusListener;
+import com.android.camera.util.CameraUtil;
 import com.android.camera.util.QuickActivity;
 import com.android.camera2.R;
 import com.android.ex.camera2.portability.CameraAgent;
@@ -46,10 +49,12 @@ import com.timber.camera2demo.SurfaceViewCameraPreviewProcessor;
 import com.timber.camera2demo.TextureViewCameraPreviewProcessor;
 
 import java.lang.ref.WeakReference;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 public class CameraActivity extends QuickActivity
-        implements AppController
+        implements AppController, OrientationManager.OnOrientationChangeListener
 {
     private static final Log.Tag TAG = new Log.Tag("CameraActivity");
 
@@ -83,6 +88,53 @@ public class CameraActivity extends QuickActivity
         return mSecureCamera;
     }
 
+    private int mOrientationCompensation = 0;
+    public int getOrientationCompensation() {
+        return mOrientationCompensation;
+    }
+    private List<OnOrientationListener> mOrientationListeners =
+            new CopyOnWriteArrayList<OnOrientationListener>();
+
+
+    public interface OnOrientationListener {
+        void onOrientationChanged(int orientation);
+    }
+
+    @Override
+    public void onOrientationChanged(OrientationManager orientationManager, OrientationManager.DeviceOrientation orientation) {
+        int orientationCompensation = (orientation.getDegrees() + CameraUtil.getDisplayRotation()) % 360;
+        if (mOrientationCompensation != orientationCompensation) {
+            Log.d(TAG, "[updateCompensation] mCompensation:"
+                    + mOrientationCompensation + ", compensation:"
+                    + orientationCompensation);
+            mOrientationCompensation = orientationCompensation;
+            for (OnOrientationListener listener : mOrientationListeners) {
+                if (listener != null) {
+                    listener.onOrientationChanged(mOrientationCompensation);
+                }
+            }
+        }
+    }
+
+    public boolean addOnOrientationListener(OnOrientationListener l) {
+        if (!mOrientationListeners.contains(l)) {
+            return mOrientationListeners.add(l);
+        }
+        return false;
+    }
+
+    public boolean removeOnOrientationListener(OnOrientationListener l) {
+        return mOrientationListeners.remove(l);
+    }
+
+    public boolean addViewManager(ViewManager viewManager) {
+        return true;//mCameraAppUI.addViewManager(viewManager);
+    }
+
+    public boolean removeViewManager(ViewManager viewManager) {
+        return true;//mCameraAppUI.removeViewManager(viewManager);
+    }
+
     @Override
     public void onCreateTasks(Bundle state) {
 
@@ -102,7 +154,9 @@ public class CameraActivity extends QuickActivity
 
         mCameraAppUI = new CameraAppUI(this,
                 (MainActivityLayout) findViewById(R.id.activity_root_view), isCaptureIntent());
+
         mCameraAppUI.prepareModuleUI();
+
     }
 
     /**
@@ -466,5 +520,21 @@ public class CameraActivity extends QuickActivity
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
 
+    }
+
+    private void doInitMainUI() {
+        if (!mCameraPreviewer.isSurfaceReady())
+            return;
+        if (!mCameraPreviewer.isCameraOpened())
+            return;
+        mCameraAppUI.initMainUI();
+    }
+
+    public void onCameraOpened(CameraDevice camera) {
+        doInitMainUI();
+    }
+
+    public void onPreviewSurfaceReady() {
+        doInitMainUI();
     }
 }

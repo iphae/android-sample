@@ -68,5 +68,6 @@ public class TextureViewCameraPreviewProcessor extends CameraPreviewProcessor im
         mPreviewSurface = new Surface(texture);
 
         mSurfaceReady = true;
+        mCameraActivity.onPreviewSurfaceReady();
     }
 }

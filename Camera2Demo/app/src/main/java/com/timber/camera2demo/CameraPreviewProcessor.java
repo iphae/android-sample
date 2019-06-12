@@ -169,6 +169,7 @@ public abstract class CameraPreviewProcessor {
         @Override
         public void onOpened(CameraDevice camera) {
             setCameraOpened(camera);
+            mCameraActivity.onCameraOpened(camera);
         }
 
         @Override
@@ -234,5 +235,13 @@ public abstract class CameraPreviewProcessor {
             }
         },
                 new Handler());
+    }
+
+    public boolean isSurfaceReady() {
+        return mSurfaceReady;
+    }
+
+    public boolean isCameraOpened() {
+        return mCameraOpened;
     }
 }

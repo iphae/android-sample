@@ -40,6 +40,7 @@ public class SurfaceViewCameraPreviewProcessor extends CameraPreviewProcessor im
         if (width == mPreviewSize.getWidth() && height == mPreviewSize.getHeight()) {
             mSurfaceReady = true;
             startPreview();
+            mCameraActivity.onPreviewSurfaceReady();
         }
     }
 
