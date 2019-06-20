@@ -3,6 +3,7 @@ package com.timber.camera2demo;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -12,6 +13,8 @@ import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.media.Image;
+import android.media.ImageReader;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
@@ -24,6 +27,7 @@ import android.widget.FrameLayout;
 import com.android.camera.CameraActivity;
 import com.android.camera2.R;
 
+import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -89,7 +93,7 @@ public abstract class CameraPreviewProcessor {
             return;
         if (mCameraOpened && mSurfaceReady) {
             try {
-                startPreview(mCameraDevice);
+                createSession(mCameraDevice);
             } catch (CameraAccessException e) {
                 e.printStackTrace();
             }
@@ -97,7 +101,7 @@ public abstract class CameraPreviewProcessor {
         }
     }
 
-    private Size getPreviewSize(int width, int height) {
+    protected Size getPreviewSize(int width, int height) {
         try {
             //获得所有摄像头的管理者CameraManager
             CameraManager cameraManager = (CameraManager) mContext.getSystemService(Context.CAMERA_SERVICE);
@@ -107,7 +111,7 @@ public abstract class CameraPreviewProcessor {
             StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
 
             //摄像头支持的预览Size数组
-            return Camera2Util.getMinPreSize(map.getOutputSizes(SurfaceTexture.class), width, height, 1000);
+            return Camera2Util.getMinPreSize(map.getOutputSizes(SurfaceTexture.class), width, height, 2000);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -118,7 +122,7 @@ public abstract class CameraPreviewProcessor {
         try {
             //获得所有摄像头的管理者CameraManager
             CameraManager cameraManager = (CameraManager) mContext.getSystemService(Context.CAMERA_SERVICE);
-            Log.i(TAG, "timber.textureview preview openCamera begin.");
+            Log.i(TAG, "timber.openCamera preview openCamera begin.");
             //打开相机
             cameraManager.openCamera("0", mCameraDeviceStateCallback, mHandler);
         } catch (CameraAccessException e) {
@@ -127,7 +131,7 @@ public abstract class CameraPreviewProcessor {
     }
 
     // 开始预览，主要是camera.createCaptureSession这段代码很重要，创建会话
-    private void startPreview(CameraDevice camera) throws CameraAccessException {
+    private void createSession(CameraDevice camera) throws CameraAccessException {
         try {
             // 设置捕获请求为预览，这里还有拍照啊，录像等
             mPreviewBuilder = camera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
@@ -143,24 +147,33 @@ public abstract class CameraPreviewProcessor {
 
         // 这里一定分别add两个surface，一个Textureview的，一个ImageReader的，如果没add，会造成没摄像头预览，或者没有ImageReader的那个回调！！
         mPreviewBuilder.addTarget(mPreviewSurface);
-        //mPreviewBuilder.addTarget(mImageReader.getSurface());
 
         List<Surface> surfaceList = new LinkedList<>();
         surfaceList.add(mPreviewSurface);
-        //surfaceList.add(mImageReader.getSurface());
-        Log.i(TAG, "timber.textureview preview createCaptureSession begin.");
+
+        /*
+        这里处理额外的surface
+         */
+//        initImageReader();
+//        mPreviewBuilder.addTarget(mImageReader.getSurface());
+//        surfaceList.add(mImageReader.getSurface());
+        /*
+        这里处理额外的surface
+         */
+
+        Log.i(TAG, "timber.createSession createCaptureSession begin.");
         mCameraDevice.createCaptureSession(surfaceList,mSessionStateCallback, mHandler);
     }
 
-    private void updatePreview(CameraCaptureSession session) throws CameraAccessException {
-        Log.i(TAG, "timber.textureview preview setRepeatingRequest begin.");
+    private void startPreviewRequest(CameraCaptureSession session) throws CameraAccessException {
+        Log.i(TAG, "timber.startPreviewRequest setRepeatingRequest begin.");
         session.setRepeatingRequest(mPreviewBuilder.build(), mPreviewStartedCallback, mHandler);
     }
 
     public void setCameraOpened(CameraDevice camera) {
         mCameraOpened = true;
         mCameraDevice = camera;
-        Log.i(TAG, "timber.textureview preview openCamera onOpened.");
+        Log.i(TAG, "timber.setCameraOpened openCamera onOpened.");
         startPreview();
     }
 
@@ -188,7 +201,7 @@ public abstract class CameraPreviewProcessor {
         @Override
         public void onConfigured(CameraCaptureSession session) {
             try {
-                updatePreview(session);
+                startPreviewRequest(session);
             } catch (CameraAccessException e) {
                 e.printStackTrace();
             }
@@ -208,7 +221,7 @@ public abstract class CameraPreviewProcessor {
             if (mBFirstFrame) {
                 return;
             }
-            Log.i(TAG, "timber.textureview preview setRepeatingRequest onCaptureCompleted.");
+            Log.i(TAG, "timber.onCaptureCompleted setRepeatingRequest onCaptureCompleted.");
             mBFirstFrame = true;
             getBitmapFromPreviewSurface();
         }
@@ -244,4 +257,32 @@ public abstract class CameraPreviewProcessor {
     public boolean isCameraOpened() {
         return mCameraOpened;
     }
+
+    private ImageReader mImageReader;
+    private void initImageReader() {
+        mImageReader = ImageReader.newInstance(mPreviewSize.getWidth(), /*mSurfaceView.getHeight()*/mPreviewSize.getHeight(), ImageFormat.JPEG/*此处还有很多格式，比如我所用到YUV等*/, 2/*最大的图片数，mImageReader里能获取到图片数，但是实际中是2+1张图片，就是多一张*/);
+
+        mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, null);
+    }
+
+    private ImageReader.OnImageAvailableListener mOnImageAvailableListener
+            = new ImageReader.OnImageAvailableListener() {
+
+        /**
+         *  当有一张图片可用时会回调此方法，但有一点一定要注意：
+         *  一定要调用 reader.acquireNextImage()和close()方法，否则画面就会卡住！！！！！我被这个坑坑了好久！！！
+         *    很多人可能写Demo就在这里打一个Log，结果卡住了，或者方法不能一直被回调。
+         **/
+        @Override
+        public void onImageAvailable(ImageReader reader) {
+//            Image img = reader.acquireNextImage();
+
+//            Log.i(TAG, "timber.real preview size, width: " + img.getWidth() + ", height: " + img.getHeight());
+//            img.close();
+//            ByteBuffer buffer = img.getPlanes()[0].getBuffer();
+//            byte[] data = new byte[buffer.remaining()];
+//            buffer.get(data);
+//            img.close();
+        }
+    };
 }

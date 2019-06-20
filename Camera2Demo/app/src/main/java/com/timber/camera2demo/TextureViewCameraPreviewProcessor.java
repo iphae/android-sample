@@ -39,7 +39,7 @@ public class TextureViewCameraPreviewProcessor extends CameraPreviewProcessor im
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        Log.i(TAG, "timber.textureview preview onSurfaceTextureAvailable. width:" + width + ", height:" + height);
+        Log.i(TAG, "timber.textureview onSurfaceTextureAvailable. width:" + width + ", height:" + height + ", texture: " + surface);
         onSurfaceAvailable();
         //openCamera();
     }
@@ -69,5 +69,7 @@ public class TextureViewCameraPreviewProcessor extends CameraPreviewProcessor im
 
         mSurfaceReady = true;
         mCameraActivity.onPreviewSurfaceReady();
+
+        Log.i(TAG, "timber.textureview setupPreviewSurface, width:" + mPreviewSize.getWidth() + ", height:" + mPreviewSize.getHeight() + ", texture: " + texture);
     }
 }

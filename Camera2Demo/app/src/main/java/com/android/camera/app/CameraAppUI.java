@@ -1428,6 +1428,7 @@ public class CameraAppUI implements
      */
     public void prepareModuleUI()
     {
+        Log.i(TAG, "timber.prepareModuleUI");
         mController.getSettingsManager().addListener(this);
 
         mModuleUI = (FrameLayout) mCameraRootView.findViewById(R.id.module_layout);
@@ -2252,6 +2253,10 @@ public class CameraAppUI implements
 
     private boolean isUIReady =false;
     public void initMainUI() {
+        Log.i(TAG, "timber.initMainUI");
+        if (isUIReady)
+            return;
         mShutterManager.setVisibility(View.VISIBLE);
+        isUIReady = true;
     }
 }

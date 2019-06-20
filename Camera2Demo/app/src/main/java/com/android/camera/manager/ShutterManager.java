@@ -1,6 +1,7 @@
 package com.android.camera.manager;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -23,6 +24,7 @@ public class ShutterManager extends AbstractViewManager {
 
     @Override
     protected View getView() {
+        Log.i(TAG, "timber.getview");
         View view = null;
         int layoutId = R.layout.camera_shutter_photo_video;
 

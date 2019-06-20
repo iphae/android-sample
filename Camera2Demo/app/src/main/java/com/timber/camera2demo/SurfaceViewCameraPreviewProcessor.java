@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.util.Log;
+import android.util.Size;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -30,7 +31,7 @@ public class SurfaceViewCameraPreviewProcessor extends CameraPreviewProcessor im
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         Log.i(TAG, "timber.surfaceview surfaceCreated.");
-        onSurfaceAvailable();
+        //onSurfaceAvailable();
         //openCamera();
     }
 
@@ -38,9 +39,12 @@ public class SurfaceViewCameraPreviewProcessor extends CameraPreviewProcessor im
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         Log.i(TAG, "timber.surfaceview surfaceChanged, width:" + width + " height:" + height);
         if (width == mPreviewSize.getWidth() && height == mPreviewSize.getHeight()) {
+            Log.i(TAG, "timber.SurfaceReady");
             mSurfaceReady = true;
             startPreview();
             mCameraActivity.onPreviewSurfaceReady();
+        } else {
+            setupPreviewSurface();
         }
     }
 
@@ -61,9 +65,14 @@ public class SurfaceViewCameraPreviewProcessor extends CameraPreviewProcessor im
     protected void setupPreviewSurface() {
         mPreviewSurface = mPreviewView.getHolder().getSurface();
 
+        //Size size = getPreviewSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
+        //Log.i(TAG, "timber.real preview size, width: " + size.getWidth() + ", height: " + size.getHeight());
+        //SurfaceView的大小是720*960，所以surface的初始大小就是720*960，而surface是用来给camera渲染preview的，
+        //因此需要把surface设置成preview的大小，那然后surface是怎么显示到SurfaceView的呢
+        //Surface显示到View的时候它是逆时针旋转了90度的；渲染的内容范围由surface决定，而渲染的位置由view决定
         mPreviewView.getHolder().setFixedSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
 //        mPreviewView.setVisibility(View.INVISIBLE);
 //        mPreviewView.setVisibility(View.VISIBLE);
-        Log.i(TAG, "timber.surfaceview initPreviewSurface done.");
+        Log.i(TAG, "timber.surfaceview setupPreviewSurface.");
     }
 }
